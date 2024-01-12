@@ -15,9 +15,8 @@ import ast
 import time
 from nltk.corpus import stopwords
 
-from collections import OrderedDict
-#bart = BartForConditionalGeneration.from_pretrained("facebook/bart-large")
-#encoder = bart.get_encoder()
+
+
 
 
 class CleanData:
