@@ -284,7 +284,7 @@ def save_to_excel(data, csv_file, column_name=0):
 
 
 def rearrange_dfs(df):
-
+    # Remove examples where the answer appears infrequently, if necessary
     traindf_init = df[df['quoteType'] == 'Explicit']
     testdf_init = df[df['quoteType'] != 'Explicit']
     trainy_init = traindf_init['speaker'].tolist()

@@ -15,7 +15,7 @@ from transformers import BertTokenizer
 import glob
 import logging
 from transformers import AutoTokenizer, BartForConditionalGeneration, Text2TextGenerationPipeline
-from modeling_cpt import CPTForConditionalGeneration
+
 import re
 from torch.cuda.amp import autocast as autocast
 from torch.cuda.amp import GradScaler as GradScaler
@@ -176,7 +176,7 @@ def collate_fn(data):
 scaler = GradScaler()
 
 
-def train(model, epochs=5, train_sample_num=10, accumulation_steps=config.accumulation_steps, dev_epoch=config.dev_epoch, criterion=None, lr=2e-5, save=False,
+def train(model, epochs=5, train_sample_num=-1, accumulation_steps=config.accumulation_steps, dev_epoch=config.dev_epoch, lr=2e-5, save=False,
 
           replied_by=False, test_fiction=None,
           only_speaker=False, only_address=False):
@@ -305,3 +305,5 @@ def train(model, epochs=5, train_sample_num=10, accumulation_steps=config.accumu
                         break
 
 
+if __name__ == '__main__':
+    train(model=model)

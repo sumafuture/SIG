@@ -5,29 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d380e2ea-e453-4f1d-9998-50274a6602cd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/SIG_test_.py" beforeDir="false" afterPath="$PROJECT_DIR$/SIG_test_.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assistant.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/JY/dev(2).xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/JY/dev.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/JY/dev.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/JY/test(2).xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/JY/test.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/JY/test.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/JY/train(2).xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/JY/train.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/JY/train.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/WP2021/dev(2).xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/WP2021/dev(4).xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/WP2021/dev_unsplit.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/WP2021/dev_unsplit.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/WP2021/test(2).xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/WP2021/test(4).xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/WP2021/test_unsplit.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/WP2021/test_unsplit.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/WP2021/train(2).xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/WP2021/train(3).xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/WP2021/train(4).xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/WP2021/train_unsplit.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/WP2021/train_unsplit.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/统计数据/统计数据.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset_built.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset_built.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/dev.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/dev.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/test.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/test.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/train.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/train.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/倚天屠龙记_answers.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/倚天屠龙记_dev_answers.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/倚天屠龙记_test_answers.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/射雕英雄传_answers.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/射雕英雄传_dev_answers.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/射雕英雄传_test_answers.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/神雕侠侣_answers.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/神雕侠侣_dev_answers.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/JY/神雕侠侣_test_answers.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/evaluate.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generation_probability_score.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sap_rev_plus.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modeling_cpt.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/data_process.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/data_process.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +111,7 @@
       <updated>1705029302935</updated>
       <workItem from="1705029304809" duration="71000" />
       <workItem from="1705029452566" duration="33000" />
-      <workItem from="1705029496043" duration="14100000" />
+      <workItem from="1705029496043" duration="15848000" />
     </task>
     <servers />
   </component>

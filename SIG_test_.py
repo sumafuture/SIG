@@ -10,7 +10,7 @@ import config
 from transformers import BartTokenizer, AutoConfig,BartConfig
 
 from transformers import AutoTokenizer, BartForConditionalGeneration, Text2TextGenerationPipeline
-from modeling_cpt import CPTForConditionalGeneration
+
 from transformers import BertTokenizer
 import jieba
 import pandas as pd

@@ -9,7 +9,7 @@ import config
 
 from tqdm import tqdm
 from transformers import BertTokenizer, BartForConditionalGeneration, Text2TextGenerationPipeline
-from modeling_cpt import CPTForConditionalGeneration
+
 from transformers import BertTokenizer
 from data_process import save_to_excel
 random.seed(1)

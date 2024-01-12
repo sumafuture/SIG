@@ -6,7 +6,7 @@ sys.path.insert(0, os.getcwd())
 
 data_dir = os.getcwd() + '/data/WP2021/'  # dataset (train, dev. test)
 bart_model_dir = 'pretrain_model/bart-large-chinese/'
-cpt_model_dir = 'pretrain_model/cpt-large/'
+
 stopwords_dir = os.getcwd() + '/data/stopwords.txt'
 file_list = ['train_unsplit.xlsx', 'dev_unsplit.xlsx', 'test_unsplit.xlsx']
 train_dir = data_dir + file_list[0]
