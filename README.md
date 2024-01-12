@@ -1,8 +1,9 @@
----
-title: SIG
 
-grammar_cjkRuby: true
----
+# SIG
+
+
+----------
+
 
 This repository contains code for **SIG.**
 [SIG: Speaker Identification in Literature via Prompt-Based Generation](https://arxiv.org/pdf/2312.14590.pdf)
