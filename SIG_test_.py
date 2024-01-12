@@ -199,4 +199,5 @@ def test_classify():
     print([candidates_list[j % len(candidates_list)] for j in top5_begin_p.cpu().numpy().tolist()])
 
 
-test_generation()
+if __name__ == '__main__':
+    test_generation()

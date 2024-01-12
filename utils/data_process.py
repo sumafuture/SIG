@@ -10,9 +10,6 @@ import time
 from nltk.corpus import stopwords
 
 
-
-
-
 class CleanData:
 
     def __init__(self, src_file, save_punctuations=True, save_stopwords=True, lower=False,sheet_name=None):
