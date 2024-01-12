@@ -23,7 +23,7 @@ import pandas as pd
 
 from utils.training_control import *
 from utils.load_data import *
-from eval.evaluate import *
+from evaluate import *
 
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
