@@ -6,7 +6,9 @@
 
 
 This repository contains code for **SIG.**
+
 [SIG: Speaker Identification in Literature via Prompt-Based Generation](https://arxiv.org/pdf/2312.14590.pdf)
+
 Zhenlin Su Liyan Xu Jin Xu Jiangnan Li Mingdu Huangfu
 
 
