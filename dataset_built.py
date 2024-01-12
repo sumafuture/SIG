@@ -3,10 +3,12 @@ import pandas as pd
 import config
 from utils.load_data import *
 import ast
+import os
+import config
 nlp = spacy.load("zh_core_web_sm")
 
 stopwords_list = load_stopwords(config.stopwords_dir)
-names_and_aliases = load_names(r"D:\speaker identification baseline\Project SIG(chinese)\data\WP2021\name_list.txt")
+names_and_aliases = load_names(config.candidate_dir)
 
 
 def judge_equal(answer:str, label: str):
@@ -41,14 +43,24 @@ def judge_equal(answer:str, label: str):
     return False
 
 
-def get_listen(src_file, output_file):
+def get_listener(src_file, output_file):
+    """
+    Get listeners to each quotation, as additional information for the model to learn from,
+    it is worth noting that this approach does not always yield positive benefits.
+    Args:
+        src_file: novels information, including speaker, quotation, context
+        output_file: novels information, including speaker, quotation, context, listener
+
+    Returns:
+
+    """
     names_and_aliases_list =[]
 
     def get_listener(context, names_list):
-        # 定义正则表达式模式，匹配中文双引号内的内容
+        # Define a regular expression pattern to match the content in Chinese double quotation marks
         pattern = r'“.*?”'
 
-        # 提取没有被引号括住的文本
+        # Extract text that is not enclosed in quotation marks
         non_quoted_text = re.sub(pattern, '', context)
 
         people_names = []
@@ -82,7 +94,7 @@ def get_listen(src_file, output_file):
         ans = []
         for f in filtered_list:
             is_listener = False
-            # 检查听者是否为上下文的speaker
+            # Check whether the listener is the speaker of other quotation in context
             for j in range(max(0, index - 5), index):
                 if judge_equal(f, df.loc[j, 'answer']):
                     ans.append(f)
@@ -102,25 +114,4 @@ def get_listen(src_file, output_file):
 
         df.to_excel(writer, sheet_name="data", index=False)
 
-"""
-data_df = pd.read_excel(r"D:\speaker identification baseline\Project SIG(chinese)\data\WP2021\train(4).xlsx", sheet_name='data')
-for index, row in data_df.iterrows():
 
-    try:
-        a = ast.literal_eval(row["listeners"])
-        if ast.literal_eval(row["listeners"]) == []:
-            print(index)
-        
-        if ast.literal_eval(row["listeners"]) != []:
-            print(ast.literal_eval(row["listeners"])[0])
-            
-        if index == 5000:
-            break
-
-    except:
-        print(index)
-"""
-
-
-get_listen(r"D:\speaker identification baseline\Project SIG(chinese)\data\WP2021\test(2).xlsx",
-           r"D:\speaker identification baseline\Project SIG(chinese)\data\WP2021\test(4).xlsx")

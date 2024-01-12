@@ -27,12 +27,12 @@ cfg = BartConfig.from_pretrained(config.bart_model_dir)
 cfg.gradient_checkpointing = True
 
 
-# 按行读取文件，返回文件的行字符串列表
+
 def read_file(file_name):
     fp = open(file_name, "r", encoding="utf-8")
     content_lines = fp.readlines()
     fp.close()
-    # 去除行末的换行符，否则会在停用词匹配的过程中产生干扰
+    # Remove the newline character at the end of the line, otherwise it will interfere with the stop word matching process
     for i in range(len(content_lines)):
         content_lines[i] = content_lines[i].rstrip("\n")
 
@@ -50,23 +50,13 @@ def test_generation():
     “这四人上了岸，只怕泄漏了我此番南来的机密。”欧阳锋一直冷眼旁观，看到他大刺刺的神情早就心中大是不忿，暗想瞧你张三这副落汤鸡般的狼狈模样。
     “这四人上了岸，只怕泄漏了我此番南来的机密。” 的说话者是[MASK]。
     """
-    text = [
-        "“这四人上了岸，只怕泄漏了我此番南来的机密。”欧阳锋一直冷眼旁观，看到他大刺刺的神情早就心中大是不忿，暗想瞧你王五这副落汤鸡般的狼狈模样。"]
 
-    source = tokenizer(paragraph,
-                       max_length=1024,
-                       add_special_tokens=True,
-                       truncation=True,
-                       # padding="max_length",
-                       return_tensors="pt"
-                       )
 
-    print(text2text_generator(paragraph, max_length=150, do_sample=False))
     generated_text = text2text_generator(paragraph, max_length=150, do_sample=False)[0]['generated_text']
     output = generated_text.split("：")
     output = re.sub(" ", '', output[1])
 
-    content_after_colon = output[1].strip()  # 使用strip()去除前后的空格
+
     print(output)
 
 
@@ -80,11 +70,11 @@ def get_candidate_list(data_file, sheet_name="data"):
 
 
 def get_candidate_list_from_chinese_context(context:str, stopwords:list):
-    # 定义正则表达式模式，匹配中文引号括住的内容 \u201c 对应中文的左双引号（“），\u201d 对应中文的右双引号（”），\u300c 对应中文的左书名号（「），\u300d 对应中文的右书名号（」）
+
     #pattern = r'[\u201c\u300c].*?[\u201d\u300d]'
     assert "“" in context
     context = '“' + context + '”'
-    # 使用 re 模块的 sub 方法替换匹配到的内容为空字符串
+
     #result = re.sub(pattern, '', context)
     seg_list = jieba.lcut(
         context,
@@ -111,7 +101,7 @@ def get_candidate_list_from_chinese_context(context:str, stopwords:list):
 
 def cal_prob_batch(target_text: list, input_text: list, model, tokenizer):
 
-    encodings = tokenizer(input_text, return_tensors="pt", max_length=612, padding='max_length', add_special_tokens=True,
+    encodings = tokenizer(input_text, return_tensors="pt", max_length=config.input_max_length, padding='max_length', add_special_tokens=True,
                           truncation=True,)
 
     encodings = {k: v.to(device) for k, v in encodings.items()}
@@ -137,19 +127,17 @@ def cal_prob_batch(target_text: list, input_text: list, model, tokenizer):
     labels_token_prob_list[labels == 0] = 0
     labels_token_prob_list[labels == 1] = 0
     labels_token_prob_list[labels == 2] = 0
-
+    # labels_token_prob_list[labels == 20517] = 0
+    # labels_token_prob_list[labels == 20494] = 0
+    # labels_token_prob_list[labels == 17520] = 0
+    # labels_token_prob_list[labels == 25832] = 0
     # Calculate the probability of generating each label and sum the probabilities of all tokens in labels_token_prob_list
     non_zero_counts = torch.count_nonzero(labels_token_prob_list, dim=1)
 
-    # 选择第二维中第七列的元素
-    speaker_begin = labels_token_prob_list[:, 6]
-
-    # 找到第七列中前五个最大值的索引
-    top5_indices = torch.argsort(speaker_begin, descending=True)[:5]
     row_sums = torch.sum(labels_token_prob_list, dim=1)
     labels_prob_list = row_sums / non_zero_counts.float()
 
-    return labels_prob_list, top5_indices
+    return labels_prob_list
 
 
 def test_classify():
@@ -157,7 +145,7 @@ def test_classify():
     random.seed(1)
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     data_path = config.test_dir
-    model_dir = config.bart_model_dir
+
 
     dev_data = CleanData(data_path,
                          save_punctuations=True,
@@ -183,9 +171,7 @@ def test_classify():
     “你也疑心我不是爹爹、妈妈的亲生女儿？” 的说话者是[MASK]。
     """
 
-    context = """
-    让营业员给顾客讲清楚，这几天一人只准买一盒，就说先用着，火柴马上可以解决！” 
-    """
+
     stopwords = read_file(config.stopwords_dir)
     final_list = get_candidate_list_from_chinese_context(paragraph, stopwords)
     print(list(final_list))
@@ -213,4 +199,4 @@ def test_classify():
     print([candidates_list[j % len(candidates_list)] for j in top5_begin_p.cpu().numpy().tolist()])
 
 
-test_classify()
+test_generation()

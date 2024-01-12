@@ -76,11 +76,23 @@ def get_candidate_list(data_file, sheet_name="data"):
 
 
 def get_candidate_list_from_chinese_context(context: str, stopwords_list: list):
-    # 定义正则表达式模式，匹配中文引号括住的内容 \u201c 对应中文的左双引号（“），\u201d 对应中文的右双引号（”），\u300c 对应中文的左书名号（「），\u300d 对应中文的右书名号（」）
+    """
+    To extract candidates directly from context,
+    the existing NER model is not ideal for name recognition in Chinese novels,
+    so all word segmentation results are regarded as candidates here.
+    Perhaps training a NER model for novels can solve this problem, but this is outside the scope of SIG.
+    Args:
+        context: context of quotation
+        stopwords_list: A list including stopwords
+
+    Returns:
+
+    """
+
     # pattern = r'[\u201c\u300c].*?[\u201d\u300d]'
     assert "“" in context
     context = '“' + context + '”'
-    # 使用 re 模块的 sub 方法替换匹配到的内容为空字符串
+
     # result = re.sub(pattern, '', context)
     seg_list = jieba.lcut(
         context,
@@ -108,7 +120,7 @@ def get_candidate_list_from_chinese_context(context: str, stopwords_list: list):
 
 def cal_prob_batch(target_text: list, input_text: list, model, tokenizer):
 
-    encodings = tokenizer(input_text, return_tensors="pt", max_length=612, padding='max_length', add_special_tokens=True,
+    encodings = tokenizer(input_text, return_tensors="pt", max_length=config.input_max_length, padding='max_length', add_special_tokens=True,
                           truncation=True,)
 
     encodings = {k: v.to(device) for k, v in encodings.items()}
@@ -134,15 +146,18 @@ def cal_prob_batch(target_text: list, input_text: list, model, tokenizer):
     labels_token_prob_list[labels == 0] = 0
     labels_token_prob_list[labels == 101] = 0
     labels_token_prob_list[labels == 102] = 0
-    labels_token_prob_list[labels == 20517] = 0
-    labels_token_prob_list[labels == 20494] = 0
-    labels_token_prob_list[labels == 17520] = 0
-    labels_token_prob_list[labels == 25832] = 0
+
+
+    # labels_token_prob_list[labels == 20517] = 0
+    # labels_token_prob_list[labels == 20494] = 0
+    # labels_token_prob_list[labels == 17520] = 0
+    # labels_token_prob_list[labels == 25832] = 0
+
     # Calculate the probability of generating each label and sum the probabilities of all tokens in labels_token_prob_list
     non_zero_counts = torch.count_nonzero(labels_token_prob_list, dim=1)
 
 
-
+    # One of optional score function of SIG
     row_sums = torch.sum(labels_token_prob_list, dim=1)
     labels_prob_list = row_sums / non_zero_counts.float()
 
@@ -150,7 +165,7 @@ def cal_prob_batch(target_text: list, input_text: list, model, tokenizer):
 
 
 class MyDataset2(Dataset):
-    def __init__(self, data, is_train=True, candidates='', alias_dict=None,):
+    def __init__(self, data):
         super(MyDataset2, self).__init__()
 
         self.episode_id = []
@@ -180,15 +195,15 @@ class MyDataset2(Dataset):
 
         try:
             context = above + "[SEP]" +"[MASK] 说：" + quotetext  + "[SEP]" + below
-            quetion = "[CLS]" + quotetext + "说话者为[MASK]。" + '[SEP]'
-            answer = "说话者为：" + speaker
-        except TypeError:
-            print(speaker, above, below, quotetext, item)
-            context = str(above) + "[SEP]" + str(quotetext) + "说话者为[MASK]" + "[SEP]" + str(below)
-            quetion = "[CLS]" + str(quotetext) + "说话者为[MASK]。" + '[SEP]'
-            answer = "说话者为：" + str(speaker)
+            question = "[CLS]" + quotetext + "说话者为[MASK]。" + '[SEP]'
 
-        return {"source": context+quetion, "speaker_label": speaker, "context": context}
+        except TypeError:
+            # print(speaker, above, below, quotetext, item)
+            context = str(above) + "[SEP]" + str(quotetext) + "说话者为[MASK]" + "[SEP]" + str(below)
+            question = "[CLS]" + str(quotetext) + "说话者为[MASK]。" + '[SEP]'
+
+
+        return {"source": context+question, "speaker_label": speaker, "context": context}
 
     def __len__(self):
         return len(self.answer)
@@ -428,7 +443,10 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
     return {"accuracy": correct/total, "topk_accuracy": correct_topk/total}
 
 
-def chinese_dev_generation(data_dir, model, tokenizer, dev_sheet="data", max_dev_nums=500, output_save_dir=""):
+def chinese_dev_generation(data_dir, model, tokenizer, dev_sheet="data", max_dev_nums=500, output_save_dir=None):
+    """
+    Direct generation (SIG_D)
+    """
     model.eval()
     model.to("cpu")
     bsz = 4
@@ -480,24 +498,19 @@ def chinese_dev_generation(data_dir, model, tokenizer, dev_sheet="data", max_dev
             print(f"error index:{index}")
             continue
 
-    save_to_excel(data=data_list, csv_file=output_save_dir + "_WP_generation" + ".xlsx",
-                                          column_name=0)
+    if output_save_dir:
+        save_to_excel(data=data_list, csv_file=output_save_dir + "_SIG_D" + ".xlsx",
+                      column_name=0)
+
     print("Accuracy: %4f" % (correct / total))
     model.to(device)
     return {"accuracy": correct / total}
 
 
 if __name__ == '__main__':
-    print(judge_equal(answer="少平", label="少安"))
-    # cfg = BartConfig.from_pretrained(config.bart_model_dir)
-    # model = BartForConditionalGeneration.from_pretrained(config.bart_model_dir, config=cfg)
-    # #model = CPTForConditionalGeneration.from_pretrained(config.cpt_model_dir)
-    # model.load_state_dict(torch.load(os.path.join(config.resume_dir, 'sig.pt'), map_location='cpu')['model'])
-    # model.to(device)
-    # tokenizer = BertTokenizer.from_pretrained(config.bart_model_dir)
-    # # print(tokenizer("说话者是：", return_tensors="pt", max_length=20, padding='max_length', add_special_tokens=True,
-    # #                    truncation=True)['input_ids'])
-    # # chinese_dev_classify(data_dir=config.dev_dir, model=model, tokenizer=tokenizer, candidate_from_context=False, split_fiction=False, topk=2, output_save_dir=r"C:\Users\17748\Desktop\AAAI数据\生成结果\speaker_dev")
-    # print("++++++++++++++")
-    # # chinese_dev_classify(data_dir=config.dev_dir, model=model, tokenizer=tokenizer, candidate_from_context=True, max_dev_sample=100)
-    # chinese_dev_generation(data_dir=config.dev_dir, model=model, tokenizer=tokenizer,max_dev_nums=500, output_save_dir=r"C:\Users\17748\Desktop\AAAI数据\生成结果\speaker-WP-generation")
+    cfg = BartConfig.from_pretrained(config.bart_model_dir)
+    model = BartForConditionalGeneration.from_pretrained(config.bart_model_dir, config=cfg)
+    model.load_state_dict(torch.load(os.path.join(config.resume_dir, 'sig.pt'), map_location='cpu')['model'])
+    model.to(device)
+    tokenizer = BertTokenizer.from_pretrained(config.bart_model_dir)
+    chinese_dev_generation(data_dir=config.dev_dir, model=model, tokenizer=tokenizer,max_dev_nums=500)
