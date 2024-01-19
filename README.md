@@ -39,6 +39,16 @@ By changing the method of prompt and selection of candidates, SIG can be used fo
  - jieba==0.42.1
  - spacy==3.6.1
 
+# Citation:
+
+``` 
+@article{su2023sig,
+  title={SIG: Speaker Identification in Literature via Prompt-Based Generation},
+  author={Su, Zhenlin and Xu, Liyan and Xu, Jin and Li, Jiangnan and Huangfu, Mingdu},
+  journal={arXiv preprint arXiv:2312.14590},
+  year={2023}
+}
+```
 
 # Contact
 If you have any problems, raise an issue or contact suzhenlin75@gmail.com
