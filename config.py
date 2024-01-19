@@ -18,9 +18,10 @@ log_dir = checkpoint_dir
 candidate_dir = os.getcwd() + '/data/WP2021/name_list.txt'  # candidate_list of WP2021
 is_save = False
 is_resume = True
-is_only_speaker = False
+
 resume_dir = r""  # checkpoint load address
 model_name = "WP2021"
+
 
 # Hyperparameters
 lr = 1e-10
@@ -34,8 +35,19 @@ accumulation_steps = 4
 topk = 2
 input_max_length = 612
 
+
+# prompt_template, change them just you like
+source_template = {"speaker_prompt_template": "的说话者是[MASK]", "addressee_prompt_template": "被[MASK]所听到"}
+target_template = {"speaker_prompt_template": "说话者是：", "addressee_prompt_template": "听者是："}
+
+# auxiliary setting
+is_only_speaker = True
+is_add_question = True
+
 # Because the data set currently used by SIG is fixed to labels, in order to correspond generatef answer to labels, common speaker suffixes are recorded for fuzzy matching.
 
 normal_chinese_suffix = ["先生", '小姐', '书记', '主任', '老', '长官', '长', '阿姨', '叔', '叔叔', '爷', '奶奶', '医生','大夫',
                          '护士', '师兄', '师姐', '支书', "师傅", "师父"]
 
+
+#

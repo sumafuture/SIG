@@ -11,7 +11,7 @@ from tqdm import tqdm
 from transformers import BertTokenizer, BartForConditionalGeneration, Text2TextGenerationPipeline
 
 from transformers import BertTokenizer
-from data_process import save_to_excel
+from utils.data_process import save_to_excel
 random.seed(1)
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # device = 'cpu'
@@ -192,18 +192,26 @@ class MyDataset2(Dataset):
         below = self.lower_text[item]
 
         quotetext = self.question[item]
+        source_template = config.source_template
 
         try:
-            context = above + "[SEP]" +"[MASK] 说：" + quotetext  + "[SEP]" + below
-            question = "[CLS]" + quotetext + "说话者为[MASK]。" + '[SEP]'
+            context = above + "[SEP]" + quotetext + source_template["speaker_prompt_template"] + source_template[
+                "addressee_prompt_template"] + "[SEP]" + below
+            question = "[CLS]" + quotetext + source_template["speaker_prompt_template"] + '[SEP]' + source_template[
+                "addressee_prompt_template"]
 
         except TypeError:
-            # print(speaker, above, below, quotetext, item)
-            context = str(above) + "[SEP]" + str(quotetext) + "说话者为[MASK]" + "[SEP]" + str(below)
-            question = "[CLS]" + str(quotetext) + "说话者为[MASK]。" + '[SEP]'
 
+            context = str(above) + "[SEP]" + str(quotetext) + source_template["speaker_prompt_template"] + \
+                      source_template["addressee_prompt_template"] + "[SEP]" + str(
+                below)
+            question = "[CLS]" + quotetext + source_template["speaker_prompt_template"] + '[SEP]' + source_template[
+                "addressee_prompt_template"]
 
-        return {"source": context+question, "speaker_label": speaker, "context": context}
+        if config.is_add_question:
+            return {"source": context+question, "speaker_label": speaker, "context": context}
+
+        return {"source": context, "speaker_label": speaker, "context": context}
 
     def __len__(self):
         return len(self.answer)
@@ -234,8 +242,7 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
     stopwords_list = load_stopwords(config.stopwords_dir)
 
     data_list = []
-
-
+    target_template = config.target_template
     if not split_fiction:
         dev_data = CleanData(data_path,
                              save_punctuations=True,
@@ -257,9 +264,9 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
 
         candidates_template_list = ["s" for _ in range(len(candidates_list))]
         for i, candidates in enumerate(candidates_list):
-            candidates_template_list[i] = "说话者是：" + candidates
+            candidates_template_list[i] = + candidates
 
-        dev_set = MyDataset2(dev_cleaned_data, is_train=False)
+        dev_set = MyDataset2(dev_cleaned_data)
         dev_loader = torch.utils.data.DataLoader(dataset=dev_set,
                                                  batch_size=bsz,
                                                  collate_fn=MyDataset2.collate_fn,
@@ -282,8 +289,10 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
                     candidates_nums.append(len(candidates_list_from_context))
                     cache_target_list.extend(candidates_list_from_context)
                     search_answer_target_list.append(candidates_list_from_context)
+
+
                 for target_i, target_v in enumerate(cache_target_list):
-                    target_list.append("说话者是：" + target_v)
+                    target_list.append(target_template["speaker_prompt_template"] + target_v)
 
                 # [source0 * candidates_nums[0], source2 * candidates_nums[2],...]
                 input_text = [item for items in zip(value_dict["source"], candidates_nums) for item in
@@ -316,7 +325,6 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
                             correct_topk += 1
                         break
                     data_list.append([answer, topk_answers, speakers[i]])
-
 
             else:
 
@@ -352,7 +360,6 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
 
                     topk_answers = [candidates_list[j % len(candidates_list)] for j in indice.cpu().numpy().tolist()]
 
-
                     for topk, topk_answer in enumerate(topk_answers):
                         if judge_equal(answer=topk_answer, label=speakers[i]):
 
@@ -361,7 +368,6 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
                                 print(topk_answer, speakers[i])
                             break
                     data_list.append([answer, topk_answers, speakers[i]])
-
 
     else:
 
@@ -386,9 +392,9 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
 
             candidates_template_list = ["s" for _ in range(len(candidates_list))]
             for i, candidates in enumerate(candidates_list):
-                candidates_template_list[i] = "说话者是: " + candidates
+                candidates_template_list[i] = target_template["speaker_prompt_template"] + candidates
 
-            dev_set = MyDataset2(dev_cleaned_data, is_train=False)
+            dev_set = MyDataset2(dev_cleaned_data)
             dev_loader = torch.utils.data.DataLoader(dataset=dev_set,
                                                      batch_size=bsz,
                                                      collate_fn=MyDataset2.collate_fn,
@@ -469,7 +475,7 @@ def chinese_dev_generation(data_dir, model, tokenizer, dev_sheet="data", max_dev
 
     text2text_generator = Text2TextGenerationPipeline(model, tokenizer)
 
-    dev_set = MyDataset2(dev_cleaned_data, is_train=False)
+    dev_set = MyDataset2(dev_cleaned_data)
     dev_loader = torch.utils.data.DataLoader(dataset=dev_set,
                                              batch_size=bsz,
                                              collate_fn=MyDataset2.collate_fn,

@@ -1,0 +1,11 @@
+You are an excellent linguist. I will provide you with two texts: one is the quote, and the other is the context of the quotation. I want you to find the answer to the quote based on the context and your knowledge. Let us think step-by-step.
+
+You should complete this task by following the steps below:
+First, you should extract the people's name and personal pronoun from the context and do the corefence solution task on them.
+Second, you should analyze the person in the context in which they speak the quote.
+Third, you should format your responses as {"speaker": [the people who spoke the quote].}}}
+
+If the speaker of the given quotation cannot be found in the context, you can ignore the context and finish the task by using your knowledge to finish the task.
+
+Context：
+Quatation：

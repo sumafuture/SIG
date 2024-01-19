@@ -53,7 +53,7 @@ DATE_FORMAT = '%Y-%m-%d %H:%m:%s %a'
 
 
 class MyDataset(Dataset):
-    def __init__(self, data, is_train=True, only_speaker=True, only_address=False, is_replied_by=False):
+    def __init__(self, data, is_train=True, only_speaker=config.is_only_speaker,):
         super(MyDataset, self).__init__()
         self.episode_id = []
         self.context = []
@@ -83,40 +83,56 @@ class MyDataset(Dataset):
         listener = self.listener[item]
         quotetext = self.question[item]
 
+        source_template = config.source_template
+        target_template = config.target_template
         if not self.only_speaker:
             try:
-                context = above + "[SEP]" + quotetext + "的说话者是[MASK]" + "被[MASK]所听到" + "[SEP]" + below
-                question = "[CLS]" + quotetext + "的说话者是[MASK]。" + '[SEP]' + "被[MASK]所听到"
-                answer = "说话者是：" + speaker + '[SEP]' + "被" + listener + "所听到"
+                context = above + "[SEP]" + quotetext + source_template["speaker_prompt_template"] + source_template["addressee_prompt_template"] + "[SEP]" + below
+                question = "[CLS]" + quotetext + source_template["speaker_prompt_template"] + '[SEP]' + source_template["addressee_prompt_template"]
+                answer = target_template["speaker_prompt_template"] + speaker + '[SEP]' + target_template["addressee_prompt_template"] + listener
 
             except TypeError:
-                print(speaker, above, below, quotetext, item)
-                context = str(above) + "[SEP]" + str(quotetext) + "说话者是[MASK]" + "被[MASK]所听到" + "[SEP]" + str(
+
+                context = str(above) + "[SEP]" + str(quotetext) + source_template["speaker_prompt_template"] + source_template["addressee_prompt_template"]  + "[SEP]" + str(
                     below)
-                question = "[CLS]" + str(quotetext) + "说话者是[MASK]。" + '[SEP]' + "被[MASK]所听到"
-                answer = "说话者是：" + str(speaker) + '[SEP]' + "被" + listener + "所听到"
+                question = "[CLS]" + quotetext + source_template["speaker_prompt_template"] + '[SEP]' + source_template[
+                    "addressee_prompt_template"]
+                answer = target_template["speaker_prompt_template"] + speaker + '[SEP]' + target_template[
+                    "addressee_prompt_template"] + listener
 
         else:
             try:
-                context = above + "[SEP]" + "[MASK] 说" + quotetext + "[SEP]" + below
-                question = "[CLS]" + quotetext + "的说话者是[MASK]。"
-                answer = "说话者是：" + speaker + '[SEP]'
+                context = above + "[SEP]" + quotetext + source_template["speaker_prompt_template"] + source_template[
+                    "addressee_prompt_template"] + "[SEP]" + below
+                question = "[CLS]" + quotetext + + source_template["speaker_prompt_template"]
+                answer = target_template["speaker_prompt_template"]  + speaker + '[SEP]'
 
             except TypeError:
-                print(speaker, above, below, quotetext, item)
-                context = str(above) + "[SEP]" + str(quotetext) + "说话者是[MASK]" + "[SEP]" + str(
-                    below)
-                question = "[CLS]" + str(quotetext) + "的说话者是[MASK]。"
-                answer = "说话者是：" + str(speaker) + '[SEP]'
+
+                context = str(above) + "[SEP]" + str(quotetext) + source_template["speaker_prompt_template"] + source_template[
+                    "addressee_prompt_template"] + "[SEP]" + below
+                question = "[CLS]" + quotetext + + source_template["speaker_prompt_template"]
+                answer = target_template["speaker_prompt_template"] + speaker + '[SEP]'
+
+        if config.is_add_question:
+            source = tokenizer(context + question,
+                               max_length=config.input_max_length,
+                               add_special_tokens=True,
+                               truncation=True,
+                               padding="max_length",
+                               return_tensors="pt"
+                               )
+
+        else:
+            source = tokenizer(context,
+                               max_length=config.input_max_length,
+                               add_special_tokens=True,
+                               truncation=True,
+                               padding="max_length",
+                               return_tensors="pt"
+                               )
 
 
-        source = tokenizer(context + question,
-                           max_length=config.input_max_length,
-                           add_special_tokens=True,
-                           truncation=True,
-                           padding="max_length",
-                           return_tensors="pt"
-                           )
 
         source_i = source["input_ids"]
         source_m = source["attention_mask"]
@@ -200,7 +216,7 @@ def train(model, epochs=5, train_sample_num=-1, accumulation_steps=config.accumu
                              sheet_name='data')
     fiction_cleaned_data = fiction_data.unsplit_data()
     train_set = MyDataset(fiction_cleaned_data, is_train=True, only_speaker=only_speaker,
-                                      only_address=only_address, is_replied_by=replied_by)
+                                     )
 
     for epoch in range(epochs):
         #  Load data
@@ -268,7 +284,7 @@ def train(model, epochs=5, train_sample_num=-1, accumulation_steps=config.accumu
 
         if epoch % dev_epoch == 0:
             dev_outcome = chinese_dev_generation(config.dev_dir, model=model, tokenizer=tokenizer, dev_sheet="data",
-                                                 max_dev_sample=config.max_dev_sample)
+                                            )
 
             recent_dev_acc = dev_outcome["accuracy"]
             #recent_dev_topk_acc = dev_outcome["topk_accuracy"]
