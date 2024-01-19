@@ -30,6 +30,13 @@ By changing the method of prompt and selection of candidates, SIG can be used fo
 
 
 
+#  Main code Introduction:
+
+ - [config.py](https://github.com/sumafuture/SIG/blob/main/config.py) : Modify parameters here to control training and evaluation, including prompt construction, training parameters, checkpoint and data paths, etc
+ -  [train.py](https://github.com/sumafuture/SIG/blob/main/train.py): Code used to train the model
+ -  [evaluate.py](https://github.com/sumafuture/SIG/blob/main/evaluate.py): Code used to train the trained model
+ - [SIG_test.py](https://github.com/sumafuture/SIG/blob/main/SIG_test_.py): Code used to test the model and to select the appropriate prompt and compare the various methods (Unnecessary)
+
 
 
 # Requirements:
