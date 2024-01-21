@@ -148,10 +148,10 @@ def cal_prob_batch(target_text: list, input_text: list, model, tokenizer):
     labels_token_prob_list[labels == 102] = 0
 
 
-    # labels_token_prob_list[labels == 20517] = 0
-    # labels_token_prob_list[labels == 20494] = 0
-    # labels_token_prob_list[labels == 17520] = 0
-    # labels_token_prob_list[labels == 25832] = 0
+    labels_token_prob_list[labels == 20517] = 0
+    labels_token_prob_list[labels == 20494] = 0
+    labels_token_prob_list[labels == 17520] = 0
+    labels_token_prob_list[labels == 25832] = 0
 
     # Calculate the probability of generating each label and sum the probabilities of all tokens in labels_token_prob_list
     non_zero_counts = torch.count_nonzero(labels_token_prob_list, dim=1)
@@ -195,18 +195,16 @@ class MyDataset2(Dataset):
         source_template = config.source_template
 
         try:
-            context = above + "[SEP]" + quotetext + source_template["speaker_prompt_template"] + source_template[
-                "addressee_prompt_template"] + "[SEP]" + below
-            question = "[CLS]" + quotetext + source_template["speaker_prompt_template"] + '[SEP]' + source_template[
-                "addressee_prompt_template"]
+            context = above + "[SEP]" + source_template["speaker_prompt_template_prefix"] + quotetext + "[SEP]" + below
+            question = "[CLS]" + quotetext + "的说话者是[MASK]。"
+
 
         except TypeError:
 
-            context = str(above) + "[SEP]" + str(quotetext) + source_template["speaker_prompt_template"] + \
-                      source_template["addressee_prompt_template"] + "[SEP]" + str(
-                below)
-            question = "[CLS]" + quotetext + source_template["speaker_prompt_template"] + '[SEP]' + source_template[
-                "addressee_prompt_template"]
+            context = str(above) + "[SEP]" + source_template[
+                "speaker_prompt_template_prefix"] + quotetext + "[SEP]" + str(below)
+            question = "[CLS]" + str(quotetext) + "的说话者是[MASK]。"
+
 
         if config.is_add_question:
             return {"source": context+question, "speaker_label": speaker, "context": context}
@@ -264,7 +262,7 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
 
         candidates_template_list = ["s" for _ in range(len(candidates_list))]
         for i, candidates in enumerate(candidates_list):
-            candidates_template_list[i] = + candidates
+            candidates_template_list[i] = target_template["speaker_prompt_template"] + candidates
 
         dev_set = MyDataset2(dev_cleaned_data)
         dev_loader = torch.utils.data.DataLoader(dataset=dev_set,
@@ -364,8 +362,7 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
                         if judge_equal(answer=topk_answer, label=speakers[i]):
 
                             correct_topk += 1
-                            if topk != 0:
-                                print(topk_answer, speakers[i])
+
                             break
                     data_list.append([answer, topk_answers, speakers[i]])
 
@@ -437,15 +434,10 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
                         if judge_equal(answer=topk_answer, label=speakers[i]):
 
                             correct_topk += 1
-                            if topk != 0:
-                                print(topk_answer, speakers[i])
                             break
 
     print("Accuracy: %4f" % (correct/total))
-    print("Top5_Accuracy: %4f" % (correct_topk/total))
-    print(data_list[-1])
-    save_to_excel(data=data_list, csv_file=output_save_dir + "_top5_SIG" + ".xlsx",
-                  column_name=0)
+
     return {"accuracy": correct/total, "topk_accuracy": correct_topk/total}
 
 
@@ -499,9 +491,7 @@ def chinese_dev_generation(data_dir, model, tokenizer, dev_sheet="data", max_dev
                     error += 1
                     print("answer:" + answer, "label:" + labels[i])
                 data_list.append([answer,answer, labels[i]])
-
         except:
-            print(f"error index:{index}")
             continue
 
     if output_save_dir:
@@ -519,4 +509,5 @@ if __name__ == '__main__':
     model.load_state_dict(torch.load(os.path.join(config.resume_dir, 'sig.pt'), map_location='cpu')['model'])
     model.to(device)
     tokenizer = BertTokenizer.from_pretrained(config.bart_model_dir)
-    chinese_dev_generation(data_dir=config.dev_dir, model=model, tokenizer=tokenizer,max_dev_nums=500)
+    # chinese_dev_generation(data_dir=config.test_dir, model=model, tokenizer=tokenizer,max_dev_nums=500)
+    chinese_dev_classify(data_dir=config.test_dir, model=model, tokenizer=tokenizer)

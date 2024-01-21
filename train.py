@@ -93,7 +93,7 @@ class MyDataset(Dataset):
 
             except TypeError:
 
-                context = str(above) + "[SEP]" + str(quotetext) + source_template["speaker_prompt_template"] + source_template["addressee_prompt_template"]  + "[SEP]" + str(
+                context = str(above) + "[SEP]" + str(quotetext) + source_template["speaker_prompt_template"] + source_template["addressee_prompt_template"] + "[SEP]" + str(
                     below)
                 question = "[CLS]" + quotetext + source_template["speaker_prompt_template"] + '[SEP]' + source_template[
                     "addressee_prompt_template"]
@@ -102,17 +102,17 @@ class MyDataset(Dataset):
 
         else:
             try:
-                context = above + "[SEP]" + quotetext + source_template["speaker_prompt_template"] + source_template[
-                    "addressee_prompt_template"] + "[SEP]" + below
-                question = "[CLS]" + quotetext + + source_template["speaker_prompt_template"]
-                answer = target_template["speaker_prompt_template"]  + speaker + '[SEP]'
+                context = above + "[SEP]" + source_template["speaker_prompt_template_prefix"] + quotetext + "[SEP]" + below
+                question = "[CLS]" + quotetext + "的说话者是[MASK]。"
+                answer = "说话者是：" + speaker + '[SEP]'
 
             except TypeError:
 
-                context = str(above) + "[SEP]" + str(quotetext) + source_template["speaker_prompt_template"] + source_template[
-                    "addressee_prompt_template"] + "[SEP]" + below
-                question = "[CLS]" + quotetext + + source_template["speaker_prompt_template"]
-                answer = target_template["speaker_prompt_template"] + speaker + '[SEP]'
+                context = str(above) + "[SEP]" + source_template["speaker_prompt_template_prefix"] + quotetext + "[SEP]" + str(below)
+                question = "[CLS]" + str(quotetext) + "的说话者是[MASK]。"
+                answer = "说话者是：" + str(speaker) + '[SEP]'
+
+
 
         if config.is_add_question:
             source = tokenizer(context + question,
@@ -192,10 +192,7 @@ def collate_fn(data):
 scaler = GradScaler()
 
 
-def train(model, epochs=5, train_sample_num=-1, accumulation_steps=config.accumulation_steps, dev_epoch=config.dev_epoch, lr=2e-5, save=False,
-
-          replied_by=False, test_fiction=None,
-          only_speaker=False, only_address=False):
+def train(model, epochs=config.train_epoch, train_sample_num=-1, accumulation_steps=config.accumulation_steps, dev_epoch=config.dev_epoch, lr=2e-5, save=config.is_save,only_speaker=False):
     bsz = config.batch_size
 
     patience = 0
@@ -274,7 +271,6 @@ def train(model, epochs=5, train_sample_num=-1, accumulation_steps=config.accumu
 
             if i == train_sample_num:
                 break
-
                 #torch.save(model.state_dict(),  os.path.join(checkpoint_dir, 'sig.pt'))
 
         # adjust learning rate after each epoch
@@ -304,9 +300,9 @@ def train(model, epochs=5, train_sample_num=-1, accumulation_steps=config.accumu
 
                                 'training_loss': train_loss / train_size,
                                 'dev_acc': round(recent_dev_acc, 4),
-                                'tokenizer_dir': config.bart_model_dir,
-                                "model_dir": config.bart_model_dir,
-                                "cfg_dir": config.bart_model_dir
+                                # 'tokenizer_dir': config.bart_model_dir,
+                                # "model_dir": config.bart_model_dir,
+                                # "cfg_dir": config.bart_model_dir
 
                             },
                             checkpoint_dir)
