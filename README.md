@@ -30,6 +30,13 @@ By changing the method of prompt and selection of candidates, SIG can be used fo
 
 
 
+#  Main code Introduction:
+
+ - [config.py](https://github.com/sumafuture/SIG/blob/main/config.py) : Modify parameters here to control training and evaluation, including prompt construction, training parameters, checkpoint and data paths, etc
+ -  [train.py](https://github.com/sumafuture/SIG/blob/main/train.py): Code used to train the model
+ -  [evaluate.py](https://github.com/sumafuture/SIG/blob/main/evaluate.py): Code used to train the trained model
+ - [SIG_test.py](https://github.com/sumafuture/SIG/blob/main/SIG_test_.py): Code used to test the model and to select the appropriate prompt and compare the various methods (Unnecessary)
+
 
 
 # Requirements:
@@ -39,6 +46,16 @@ By changing the method of prompt and selection of candidates, SIG can be used fo
  - jieba==0.42.1
  - spacy==3.6.1
 
+# Citation:
+
+``` 
+@article{su2023sig,
+  title={SIG: Speaker Identification in Literature via Prompt-Based Generation},
+  author={Su, Zhenlin and Xu, Liyan and Xu, Jin and Li, Jiangnan and Huangfu, Mingdu},
+  journal={arXiv preprint arXiv:2312.14590},
+  year={2023}
+}
+```
 
 # Contact
 If you have any problems, raise an issue or contact suzhenlin75@gmail.com
