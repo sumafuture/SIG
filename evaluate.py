@@ -196,14 +196,14 @@ class MyDataset2(Dataset):
 
         try:
             context = above + "[SEP]" + source_template["speaker_prompt_template_prefix"] + quotetext + "[SEP]" + below
-            question = "[CLS]" + quotetext + "的说话者是[MASK]。"
+            question = "[CLS]" + str(quotetext) + source_template["speaker_prompt_template"]
 
 
         except TypeError:
 
             context = str(above) + "[SEP]" + source_template[
                 "speaker_prompt_template_prefix"] + quotetext + "[SEP]" + str(below)
-            question = "[CLS]" + str(quotetext) + "的说话者是[MASK]。"
+            question = "[CLS]" + str(quotetext) + source_template["speaker_prompt_template"]
 
 
         if config.is_add_question:

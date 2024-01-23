@@ -53,7 +53,7 @@ DATE_FORMAT = '%Y-%m-%d %H:%m:%s %a'
 
 
 class MyDataset(Dataset):
-    def __init__(self, data, is_train=True, only_speaker=config.is_only_speaker,):
+    def __init__(self, data, is_train=True, only_speaker=config.is_only_speaker):
         super(MyDataset, self).__init__()
         self.episode_id = []
         self.context = []
@@ -85,7 +85,7 @@ class MyDataset(Dataset):
 
         source_template = config.source_template
         target_template = config.target_template
-        if not self.only_speaker:
+        if not config.is_only_speaker:
             try:
                 context = above + "[SEP]" + quotetext + source_template["speaker_prompt_template"] + source_template["addressee_prompt_template"] + "[SEP]" + below
                 question = "[CLS]" + quotetext + source_template["speaker_prompt_template"] + '[SEP]' + source_template["addressee_prompt_template"]
@@ -103,14 +103,14 @@ class MyDataset(Dataset):
         else:
             try:
                 context = above + "[SEP]" + source_template["speaker_prompt_template_prefix"] + quotetext + "[SEP]" + below
-                question = "[CLS]" + quotetext + "的说话者是[MASK]。"
-                answer = "说话者是：" + speaker + '[SEP]'
+                question = "[CLS]" + quotetext + source_template["speaker_prompt_template"]
+                answer = target_template["speaker_prompt_template"]  + speaker + '[SEP]'
 
             except TypeError:
 
                 context = str(above) + "[SEP]" + source_template["speaker_prompt_template_prefix"] + quotetext + "[SEP]" + str(below)
-                question = "[CLS]" + str(quotetext) + "的说话者是[MASK]。"
-                answer = "说话者是：" + str(speaker) + '[SEP]'
+                question = "[CLS]" + str(quotetext) + source_template["speaker_prompt_template"]
+                answer = target_template["speaker_prompt_template"]  + str(speaker) + '[SEP]'
 
 
 
@@ -286,6 +286,7 @@ def train(model, epochs=config.train_epoch, train_sample_num=-1, accumulation_st
             #recent_dev_topk_acc = dev_outcome["topk_accuracy"]
             if recent_dev_acc > dev_acc:
                 dev_acc = recent_dev_acc
+                patience = 0
 
                 if save:
                     timestamp = time.strftime("%Y%m%d%H%M%S", time.localtime())
