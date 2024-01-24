@@ -279,7 +279,7 @@ def train(model, epochs=config.train_epoch, train_sample_num=-1, accumulation_st
         print("Training set average error：{}".format(train_loss / train_size))
 
         if epoch % dev_epoch == 0:
-            dev_outcome = chinese_dev_generation(config.dev_dir, model=model, tokenizer=tokenizer, dev_sheet="data",
+            dev_outcome = dev_generation(config.dev_dir, model=model, tokenizer=tokenizer, dev_sheet="data",
                                             )
 
             recent_dev_acc = dev_outcome["accuracy"]

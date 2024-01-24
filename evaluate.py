@@ -223,7 +223,7 @@ class MyDataset2(Dataset):
         return {"source": source, "speaker_label": speaker, "context": context}
 
 
-def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, candidate_from_context=False,
+def dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, candidate_from_context=False,
                          max_dev_sample=500, split_fiction=False,  output_save_dir=""):
     model.eval()
     bsz = 4
@@ -441,7 +441,7 @@ def chinese_dev_classify(data_dir, model, tokenizer,  dev_sheet="data", topk=2, 
     return {"accuracy": correct/total, "topk_accuracy": correct_topk/total}
 
 
-def chinese_dev_generation(data_dir, model, tokenizer, dev_sheet="data", max_dev_nums=500, output_save_dir=None):
+def dev_generation(data_dir, model, tokenizer, dev_sheet="data", max_dev_nums=500, output_save_dir=None):
     """
     Direct generation (SIG_D)
     """
@@ -450,8 +450,7 @@ def chinese_dev_generation(data_dir, model, tokenizer, dev_sheet="data", max_dev
     bsz = 4
     total = 0
 
-    correct_answer_in = 0
-    correct_topk = 0
+
     data_path = data_dir
     correct = 0
     error = 0
@@ -510,4 +509,4 @@ if __name__ == '__main__':
     model.to(device)
     tokenizer = BertTokenizer.from_pretrained(config.bart_model_dir)
     # chinese_dev_generation(data_dir=config.test_dir, model=model, tokenizer=tokenizer,max_dev_nums=500)
-    chinese_dev_classify(data_dir=config.test_dir, model=model, tokenizer=tokenizer)
+    dev_classify(data_dir=config.test_dir, model=model, tokenizer=tokenizer)
