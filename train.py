@@ -53,7 +53,7 @@ DATE_FORMAT = '%Y-%m-%d %H:%m:%s %a'
 
 
 class MyDataset(Dataset):
-    def __init__(self, data, is_train=True, only_speaker=config.is_only_speaker):
+    def __init__(self, data):
         super(MyDataset, self).__init__()
         self.episode_id = []
         self.context = []
@@ -64,7 +64,7 @@ class MyDataset(Dataset):
         self.listener = []
         data.sample(frac=1)
 
-        self.only_speaker = only_speaker
+        self.only_speaker = config.is_only_speaker if hasattr(config, 'is_only_speaker') else True
         for sample in data.index:
             self.episode_id.append(data.loc[sample].values[0])
             self.context.append(data.loc[sample].values[1])
