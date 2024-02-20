@@ -7,7 +7,7 @@
 
 This repository contains code for **SIG.**
 
-[SIG: Speaker Identification in Literature via Prompt-Based Generation](https://arxiv.org/pdf/2312.14590.pdf)
+[SIG: Speaker Identification in Literature via Prompt-Based Generation](https://arxiv.org/abs/2312.14590)
 
 Zhenlin Su, Liyan Xu, Jin Xu, Jiangnan Li, Mingdu Huangfu
 
@@ -50,10 +50,7 @@ By changing the method of prompt and selection of candidates, SIG can be used fo
 
 ``` 
 @article{su2023sig,
-  title={SIG: Speaker Identification in Literature via Prompt-Based Generation},
-  author={Su, Zhenlin and Xu, Liyan and Xu, Jin and Li, Jiangnan and Huangfu, Mingdu},
-  journal={arXiv preprint arXiv:2312.14590},
-  year={2023}
+title={SIG: Speaker Identification in Literature via Prompt-Based Generation}, journal={Proceedings of the AAAI Conference on Artificial Intelligence}, author={Zhenlin Su and Liyan Xu and Jin Xu and Jiangnan Li and Mingdu Huangfu}, year={2024}
 }
 ```
 
