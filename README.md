@@ -50,7 +50,10 @@ By changing the method of prompt and selection of candidates, SIG can be used fo
 
 ``` 
 @article{su2023sig,
-title={SIG: Speaker Identification in Literature via Prompt-Based Generation}, journal={Proceedings of the AAAI Conference on Artificial Intelligence}, author={Zhenlin Su and Liyan Xu and Jin Xu and Jiangnan Li and Mingdu Huangfu}, year={2024}
+title={SIG: Speaker Identification in Literature via Prompt-Based Generation},
+journal={Proceedings of the AAAI Conference on Artificial Intelligence}, 
+author={Zhenlin Su and Liyan Xu and Jin Xu and Jiangnan Li and Mingdu Huangfu}, 
+year={2024}
 }
 ```
 
