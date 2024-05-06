@@ -212,7 +212,7 @@ def train(model, epochs=config.train_epoch, train_sample_num=-1, accumulation_st
                              save_stopwords=True,
                              sheet_name='data')
     fiction_cleaned_data = fiction_data.unsplit_data()
-    train_set = MyDataset(fiction_cleaned_data, is_train=True, only_speaker=only_speaker,
+    train_set = MyDataset(fiction_cleaned_data
                                      )
 
     for epoch in range(epochs):
